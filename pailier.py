@@ -12,7 +12,7 @@ def save(filename, key):
 def load(filename):
     try:
         f = open(filename, 'r')    
-        pickle.load(f)
+        return pickle.load(f)
     except Exception:
         return None
 
