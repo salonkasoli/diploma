@@ -1,0 +1,30 @@
+username=ivan
+password=qweasdzxc
+
+----------------------------------------------------------------
+---------------------- CMD -------------------------------------
+----------------------------------------------------------------
+
+sudo su - postgres
+psql
+\connect test_1
+select * from test_2;
+
+
+create user ivan with password 'qweasdzxc';
+create database test_1;
+grant all privileges on database test_1 to ivan;
+GRANT USAGE, SELECT ON ALL SEQUENCES IN SCHEMA public TO ivan;
+
+
+CREATE TABLE test_2 (
+    id  SERIAL PRIMARY KEY,
+    name decimal,
+    age decimal,
+    therapy_duration decimal,
+    gen_before decimal,
+    gen_after decimal,
+    is_effective decimal
+);
+
+INSERT INTO test_2 (name, age, therapy_duration, gen_before, gen_after, is_effective) VALUES (1, 1, 1, 1, 1, 1);
