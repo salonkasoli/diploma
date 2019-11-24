@@ -1,0 +1,48 @@
+<!doctype html>
+<link href="{{ url_for('static', filename='css/bootstrap.min.css') }}" rel="stylesheet">
+<form action="http://127.0.0.1:5000/search" method="post" class="m-5">
+  <div class="form-group">
+    <label for="name">Имя пацента</label>
+    <input class="form-control" name="name" id="name" aria-describedby="emailHelp" placeholder="ФИО">
+  </div>
+  
+  <label>Возраст</label>
+  <div class="form-row">
+      <div class="col">
+        <div class="form-group">
+            <input class="form-control" name="age_min" id="age_min" placeholder="14">
+          <small class="form-text text-muted">от</small>
+        </div>
+    </div>
+        <div class="col">
+        <div class="form-group">
+            <input class="form-control" name="age_max" id="age_max" placeholder="35">
+          <small class="form-text text-muted">до</small>
+        </div>
+    </div>
+  </div>
+  
+  <div class="form-group">
+    <label for="therapy_duration">Продолжительность лечения</label>
+    <input class="form-control" name="therapy_duration" id="therapy_duration" placeholder="52">
+    <small class="form-text text-muted">Количество дней</small>
+  </div>
+  
+  <div class="form-group">
+    <label for="gen_before_therapy">Количество лейкоцитов до начала терапии</label>
+    <input class="form-control" name="gen_before_therapy" id="gen_before_therapy" placeholder="1,7">
+  </div>
+  
+  <div class="form-group">
+    <label for="gen_after_therapy">Количество лейкоцитов по окончанию терапии</label>
+    <input class="form-control" name="gen_after_therapy" id="gen_after_therapy" placeholder="2,9">
+  </div>
+  
+  <div class="form-check">
+  <input class="form-check-input" name="is_effective" type="checkbox" value="" id="is_effective">
+  <label class="form-check-label" for="is_effective">
+    Лечение эффективно
+  </label>
+</div>
+  <button type="submit" class="btn btn-primary">Искать</button>
+</form>
