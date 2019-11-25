@@ -1,6 +1,6 @@
 from flask import Flask, request, render_template, redirect, url_for
-from db.postgre_connect import insert
-from convert import str_to_number
+from db.postgre_connect import insert, select, Request
+from convert import str_to_number, number_to_str
 
 ## here import stuff to cypher
 from crypt.aes import get_cipher
@@ -10,6 +10,10 @@ from base64 import b64encode, b64decode
 import binascii
 
 app = Flask(__name__)
+
+class Item():
+    def __init__(self):
+        pass
 
 @app.route('/')
 def hello_world():
@@ -34,18 +38,39 @@ def save():
     gen_after_therapy = check_int(request.form.get('gen_after_therapy'))
     is_effective = request.form.get('is_effective')
     if (is_effective != None):
-        is_effective = "true"
+        is_effective = "yes"
     else:
-        is_effective = "false"
-    #convert it to num
-    ciphered_name = det_encrypt_string(name)
+        is_effective = "no"
+    ciphered_name = str_to_number(det_encrypt_string(name))
     ciphered_age = ope_encrypt_int(age)
     ciphered_therapy_duration = ope_encrypt_int(therapy_duration)
     ciphered_gen_before = he_encrypt(gen_before_therapy)
     ciphered_gen_after = he_encrypt(gen_after_therapy)
-    ciphered_is_effective = det_encrypt_string(is_effective)
-    #insert(name, age, therapy_duration, gen_before_therapy, gen_after_therapy, is_effective)
+    ciphered_is_effective = str_to_number(det_encrypt_string(is_effective))
+    insert(ciphered_name, ciphered_age, ciphered_therapy_duration, ciphered_gen_before, ciphered_gen_after, ciphered_is_effective)
     return redirect(url_for('hello_world'))
+
+@app.route('/q', methods=['POST'])    
+def q():
+    request = Request()
+    rows = select(request)
+    items = []
+    for row in rows:
+        item = Item()
+        item.name = det_decrypt_string(number_to_str(row[1]))
+        item.age = ope_decrypt_int(int(row[2]))
+        item.therapy_duration = ope_decrypt_int(int(row[3]))
+        item.gen_before = he_decrypt(int(row[4]))
+        item.gen_after = he_decrypt(int(row[5]))
+        item.is_effective = det_decrypt_string(number_to_str(row[6]))
+        items.append(item)
+    return render_template('list.html', items=items)
+    
+@app.route('/list')
+def list():
+    items = []
+    items.append(Item(1,2,3))
+    return render_template('list.html', items=items)
     
 def check_int(arg):
     if (arg == None):

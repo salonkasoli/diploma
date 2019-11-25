@@ -1,0 +1,26 @@
+<!doctype html>
+<link href="{{ url_for('static', filename='css/bootstrap.min.css') }}" rel="stylesheet">
+<table class="table">
+  <thead>
+    <tr>
+      <th scope="col">Имя пациента</th>
+      <th scope="col">Возраст</th>
+      <th scope="col">Длительность лечения</th>
+      <th scope="col">Гены до</th>
+      <th scope="col">Гены после</th>
+      <th scope="col">Лечение эффективно</th>
+    </tr>
+  </thead>
+  <tbody>
+    {% for item in items %}
+    <tr>
+        <td>{{item.name}}</td>
+        <td>{{item.age}}</td>
+        <td>{{item.therapy_duration}}</td>
+        <td>{{item.gen_before}}</td>
+        <td>{{item.gen_after}}</td>
+        <td>{{item.is_effective}}</td>
+    </tr>
+    {% endfor %}
+  </tbody>
+</table>
