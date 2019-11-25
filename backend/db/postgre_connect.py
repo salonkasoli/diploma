@@ -19,6 +19,10 @@ class Request:
             request += ' AND is_effective = ' + str(self.is_effective)
         if (self.name != None):
             request += ' AND name = ' + str(self.name)
+        if (self.min_therapy_duration != None):
+            request += ' AND therapy_duration > ' + str(self.min_therapy_duration)
+        if (self.max_therapy_duration != None):
+            request += ' AND therapy_duration < ' + str(self.max_therapy_duration)
         return request
 
 

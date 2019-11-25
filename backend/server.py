@@ -52,8 +52,27 @@ def save():
 
 @app.route('/q', methods=['POST'])    
 def q():
-    request = Request()
-    rows = select(request)
+    db_request = Request()
+    name = request.form.get("name")
+    age_min = request.form.get("age_min")
+    age_max = request.form.get("age_max")
+    therapy_duration_min = request.form.get("therapy_duration_min")
+    therapy_duration_max = request.form.get("therapy_duration_max")
+    is_effective = request.form.get("is_effective")
+    if (name != None and len(name) > 0):
+        db_request.name = str_to_number(det_encrypt_string(name))
+    if (age_min != None and len(age_min) > 0):
+        db_request.min_age = ope_encrypt_int(int(age_min))
+    if (age_max != None and len(age_max) > 0):
+        db_request.max_age = ope_encrypt_int(int(age_max))
+    if (therapy_duration_min != None and len(therapy_duration_min) > 0):
+        db_request.min_therapy_duration = ope_encrypt_int(int(therapy_duration_min))
+    if (therapy_duration_max != None and len(therapy_duration_max) > 0):
+        db_request.max_therapy_duration = ope_encrypt_int(int(therapy_duration_max))
+    if (is_effective != None and len(is_effective) > 0):
+        if (is_effective == 'yes' or is_effective == 'no'):
+            db_request.is_effective = str_to_number(det_encrypt_string(is_effective))
+    rows = select(db_request)
     items = []
     for row in rows:
         item = Item()
@@ -64,12 +83,6 @@ def q():
         item.gen_after = he_decrypt(int(row[5]))
         item.is_effective = det_decrypt_string(number_to_str(row[6]))
         items.append(item)
-    return render_template('list.html', items=items)
-    
-@app.route('/list')
-def list():
-    items = []
-    items.append(Item(1,2,3))
     return render_template('list.html', items=items)
     
 def check_int(arg):
@@ -91,12 +104,10 @@ def det_decrypt_string(s):
     return pt
     
 def ope_encrypt_int(value):
-    print str(value)
     cipher = get_ope_cipher()
     return cipher.encrypt(value)
     
 def ope_decrypt_int(value):
-    print str(value)
     cipher = get_ope_cipher()
     return cipher.decrypt(value)
     
