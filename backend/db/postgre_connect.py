@@ -7,9 +7,16 @@ class Request:
     name = None
     min_therapy_duration = None
     max_therapy_duration = None
+    avg_gen_before = None
+    avg_gen_after = None
+    he_pub = None
     
     def build(self):
-        request = """SELECT * FROM test_2 WHERE 1=1"""
+        request = ""
+        if (self.avg_gen_before == None):
+            request = """SELECT * FROM test_2 WHERE 1=1"""
+        else:
+            request = """SELECT my_avg_2(""" + str(self.he_pub) + """, gen_before), count(gen_before) FROM test_2 WHERE 1=1"""
         
         if (self.min_age != None):
             request += ' AND age > ' + str(self.min_age)

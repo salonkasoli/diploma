@@ -72,13 +72,24 @@ def q():
     if (is_effective != None and len(is_effective) > 0):
         if (is_effective == 'yes' or is_effective == 'no'):
             db_request.is_effective = str_to_number(det_encrypt_string(is_effective))
+    db_request.avg_gen_before = request.form.get("avg_before")
+    db_request.avg_gen_after = request.form.get("avg_after")
+    if (db_request.avg_gen_before != None):
+        cipher = get_he_cipher()
+        db_request.he_pub = cipher.pub.n
     rows = select(db_request)
+    if (db_request.avg_gen_before != None):
+        decrypted = he_decrypt(int(rows[0][0]))
+        avg = decrypted / rows[0][1]
+        ## TODO redirect here to another page
     items = []
     for row in rows:
         item = Item()
         item.name = det_decrypt_string(number_to_str(row[1]))
         item.age = ope_decrypt_int(int(row[2]))
         item.therapy_duration = ope_decrypt_int(int(row[3]))
+        print 'gen before'
+        print int(row[4])
         item.gen_before = he_decrypt(int(row[4]))
         item.gen_after = he_decrypt(int(row[5]))
         item.is_effective = det_decrypt_string(number_to_str(row[6]))
