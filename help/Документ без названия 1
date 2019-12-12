@@ -1,0 +1,61 @@
+CREATE AGGREGATE my_avg_2 (DECIMAL, DECIMAL) (
+    initcond = '1', -- this is the initial state of type POINT
+    stype = DECIMAL, -- this is the type of the state that will be passed between steps
+    sfunc = my_state_2
+);
+
+CREATE OR REPLACE FUNCTION my_state_2 (state DECIMAL, pub DECIMAL, elem DECIMAL)
+RETURNS DECIMAL
+LANGUAGE SQL
+AS $$
+    SELECT (state * elem % (pub * pub))
+$$;
+
+
+
+
+CREATE FUNCTION my_acc (state POINT, elem_for_step NUMERIC)
+RETURNS POINT
+LANGUAGE SQL
+AS $$
+    SELECT POINT(state[0]+1, state[1] + elem_for_step);
+$$;
+
+CREATE FUNCTION my_final_func (POINT)
+RETURNS NUMERIC
+LANGUAGE SQL
+AS $$
+    SELECT ($1[1]/$1[0])::NUMERIC;
+$$;
+
+
+CREATE OR REPLACE FUNCTION my_state_1 (a DECIMAL[])
+RETURNS DECIMAL[]
+AS $$
+BEGIN
+a[1] = a[1] + a[2];
+RETURN  a;
+END;
+$$
+LANGUAGE plpgsql;
+
+CREATE FUNCTION my_fini_1(a DECIMAL[]) RETURNS RECORD AS $$
+DECLARE 
+  ret RECORD;
+BEGIN
+  SELECT a[1], a[2] INTO ret;
+  RETURN ret;
+END;$$ LANGUAGE plpgsql;
+
+
+CREATE FUNCTION my_fini_2(a DECIMAL[]) RETURNS TABLE(s DECIMAL, c DECIMAL) LANGUAGE SQL 
+AS $$
+SELECT a[1],a[2];
+$$;
+
+CREATE AGGREGATE my_avg (NUMERIC) ( -- NUMERIC is what the function returns
+    initcond = '(0,0)', -- this is the initial state of type POINT
+    stype = POINT, -- this is the type of the state that will be passed between steps
+    sfunc = my_acc, -- this is the function that knows how to compute a new average from existing average and new element. Takes in the state (type POINT) and an element for the step (type NUMERIC)
+    finalfunc = my_final_func -- returns the result for the aggregate function. Takes in the state of type POINT (like all other steps) and returns the result as what the aggregate function returns - NUMERIC 
+);
