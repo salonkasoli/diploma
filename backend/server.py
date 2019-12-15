@@ -74,14 +74,36 @@ def q():
             db_request.is_effective = str_to_number(det_encrypt_string(is_effective))
     db_request.avg_gen_before = request.form.get("avg_before")
     db_request.avg_gen_after = request.form.get("avg_after")
-    if (db_request.avg_gen_before != None):
+    if (db_request.avg_gen_before != None or db_request.avg_gen_after != None):
         cipher = get_he_cipher()
         db_request.he_pub = cipher.pub.n
     rows = select(db_request)
-    if (db_request.avg_gen_before != None):
-        decrypted = he_decrypt(int(rows[0][0]))
-        avg = decrypted / rows[0][1]
+    if (db_request.avg_gen_before != None or db_request.avg_gen_after != None):
+        sum_before = None
+        sum_after = None
+        count = None
+        count_index = 1
+        if (db_request.avg_gen_before != None):
+            sum_before = he_decrypt(int(rows[0][0]))
+        if (db_request.avg_gen_after != None):
+            after_index = 0
+            if (db_request.avg_gen_before != None):
+                after_index = 1
+                count_index = 2
+            sum_after = he_decrypt(int(rows[0][after_index]))
+        count = rows[0][count_index]
+        avg_before = None
+        avg_after = None
+        if (sum_before != None):
+            avg_before = sum_before / count
+        if (sum_after != None):
+            avg_after = sum_after / count
         ## TODO redirect here to another page
+        item = Item()
+        item.count = count
+        item.avg_before = avg_before
+        item.avg_after = avg_after
+        return render_template('average.html', item=item)
     items = []
     for row in rows:
         item = Item()

@@ -13,10 +13,17 @@ class Request:
     
     def build(self):
         request = ""
-        if (self.avg_gen_before == None):
+        if (self.avg_gen_before == None and self.avg_gen_after == None):
             request = """SELECT * FROM test_2 WHERE 1=1"""
         else:
-            request = """SELECT my_avg_2(""" + str(self.he_pub) + """, gen_before), count(gen_before) FROM test_2 WHERE 1=1"""
+            request = """SELECT """
+            if (self.avg_gen_before != None): 
+                request += """ my_avg_2(""" + str(self.he_pub) + """, gen_before)"""
+            if (self.avg_gen_after != None):
+                if (self.avg_gen_before != None):
+                    request += ','
+                request += """ my_avg_2(""" + str(self.he_pub) + """, gen_after)"""
+            request += """, count(gen_after) FROM test_2 WHERE 1=1"""
         
         if (self.min_age != None):
             request += ' AND age > ' + str(self.min_age)

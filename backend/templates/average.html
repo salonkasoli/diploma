@@ -1,0 +1,18 @@
+<!doctype html>
+<link href="{{ url_for('static', filename='css/bootstrap.min.css') }}" rel="stylesheet">
+<table class="table">
+  <thead>
+    <tr>
+      <th scope="col">Количество человек</th>
+      <th scope="col">Среднее до терапии</th>
+      <th scope="col">Среднее после терапии</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+        <td>{{item.count}}</td>
+        <td>{{item.avg_before}}</td>
+        <td>{{item.avg_after}}</td>
+    </tr>
+  </tbody>
+</table>
