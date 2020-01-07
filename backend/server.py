@@ -1,7 +1,7 @@
 from flask import Flask, request, render_template, redirect, url_for
 from db.postgre_connect import insert, select, Request
 from convert import str_to_number, number_to_str
-from safedb import SafeRequest, Field, Condition
+from safedb import *
 
 ## here import stuff to cypher
 from crypt.aes import get_cipher
@@ -11,6 +11,14 @@ from base64 import b64encode, b64decode
 import binascii
 
 app = Flask(__name__)
+safeDB = SafeDB()
+safeDB.addField("id", "none")
+safeDB.addField("name", "=")
+safeDB.addField("age", ">")
+safeDB.addField("therapy_duration", ">")
+safeDB.addField("gen_before", "+")
+safeDB.addField("gen_after", "+")
+safeDB.addField("is_effective", "=")
 
 class Item():
     def __init__(self):
@@ -42,6 +50,15 @@ def save():
         is_effective = "yes"
     else:
         is_effective = "no"
+    insertRequest = InsertRequest()
+    insertRequest.addValue(safeDB.fields['name'], name)
+    insertRequest.addValue(safeDB.fields['age'], age)
+    insertRequest.addValue(safeDB.fields['therapy_duration'], therapy_duration)
+    insertRequest.addValue(safeDB.fields['gen_before'], gen_before_therapy)
+    insertRequest.addValue(safeDB.fields['gen_after'], gen_after_therapy)
+    insertRequest.addValue(safeDB.fields['is_effective'], is_effective)
+    
+    safeDB.insert(insertRequest)
     ciphered_name = str_to_number(det_encrypt_string(name))
     ciphered_age = ope_encrypt_int(age)
     ciphered_therapy_duration = ope_encrypt_int(therapy_duration)
@@ -63,34 +80,34 @@ def q():
     is_effective = request.form.get("is_effective")
     if (name != None and len(name) > 0):
         db_request.name = str_to_number(det_encrypt_string(name))
-        safe_request.addCondition(Field("name", "="),Condition("=", name))
+        safe_request.addCondition(safeDB.fields['name'],Condition("=", name))
     if (age_min != None and len(age_min) > 0):
         db_request.min_age = ope_encrypt_int(int(age_min))
-        safe_request.addCondition(Field("age", ">"),Condition(">", age_min))
+        safe_request.addCondition(safeDB.fields['age'],Condition(">", age_min))
     if (age_max != None and len(age_max) > 0):
         db_request.max_age = ope_encrypt_int(int(age_max))
-        safe_request.addCondition(Field("age", ">"),Condition("<", age_max))
+        safe_request.addCondition(safeDB.fields['age'],Condition("<", age_max))
     if (therapy_duration_min != None and len(therapy_duration_min) > 0):
         db_request.min_therapy_duration = ope_encrypt_int(int(therapy_duration_min))
-        safe_request.addCondition(Field("therapy_duration", ">"),Condition(">", therapy_duration_min))
+        safe_request.addCondition(safeDB.fields["therapy_duration"] ,Condition(">", therapy_duration_min))
     if (therapy_duration_max != None and len(therapy_duration_max) > 0):
         db_request.max_therapy_duration = ope_encrypt_int(int(therapy_duration_max))
-        safe_request.addCondition(Field("therapy_duration", ">"),Condition("<", therapy_duration_max))
+        safe_request.addCondition(safeDb.fields["therapy_duration"] ,Condition("<", therapy_duration_max))
     if (is_effective != None and len(is_effective) > 0):
         if (is_effective == 'yes' or is_effective == 'no'):
             db_request.is_effective = str_to_number(det_encrypt_string(is_effective))
-            safe_request.addCondition(Field("is_effective", "="),Condition("=", is_effective))
+            safe_request.addCondition(safeDB.fields["is_effective"],Condition("=", is_effective))
     db_request.avg_gen_before = request.form.get("avg_before")
     db_request.avg_gen_after = request.form.get("avg_after")
     if (db_request.avg_gen_before != None or db_request.avg_gen_after != None):
         cipher = get_he_cipher()
         db_request.he_pub = cipher.pub.n
         if (db_request.avg_gen_before != None):
-            safe_request.addAvgCondition(Field("avg_gen_before", "+"), cipher.pub.n)
+            safe_request.addAvgCondition(safeDB.fields["gen_before"], cipher.pub.n)
         if (db_request.avg_gen_after != None):
-            safe_request.addAvgCondition(Field("avg_gen_after", "+"), cipher.pub.n)
+            safe_request.addAvgCondition(safeDB.fields["gen_after"], cipher.pub.n)
     
-    print safe_request.build()
+    safeDB.select(safe_request)
     rows = select(db_request)
     if (db_request.avg_gen_before != None or db_request.avg_gen_after != None):
         sum_before = None
@@ -167,4 +184,4 @@ def he_decrypt(value):
     return cipher.decrypt(value)
 
 if __name__ == '__main__':
-   app.run()
+    app.run()

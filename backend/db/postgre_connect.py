@@ -53,6 +53,7 @@ def insert(name, age, therapy_duration, gen_before, gen_after, is_effective):
 def select(request):
     conn = psycopg2.connect("dbname='test_1' user='ivan' host='localhost' password='qweasdzxc'")
     cursor = conn.cursor()
+    print 'actual = ' + request.build()
     cursor.execute(request.build())
     rows = cursor.fetchall()
     cursor.close()
