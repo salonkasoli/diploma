@@ -11,14 +11,17 @@ from base64 import b64encode, b64decode
 import binascii
 
 app = Flask(__name__)
-safeDB = SafeDB()
-safeDB.addField("id", "none")
-safeDB.addField("name", "=")
-safeDB.addField("age", ">")
-safeDB.addField("therapy_duration", ">")
-safeDB.addField("gen_before", "+")
-safeDB.addField("gen_after", "+")
-safeDB.addField("is_effective", "=")
+request_builder = RequestBuilder()
+request_builder.set_table_name("test_2")
+request_builder.add_field("id", "none")
+request_builder.add_field("name", "=")
+request_builder.add_field("age", ">")
+request_builder.add_field("therapy_duration", ">")
+request_builder.add_field("gen_before", "+")
+request_builder.add_field("gen_after", "+")
+request_builder.add_field("is_effective", "=")
+
+postgreRepository = PostgreRepository('test_1','ivan','localhost','qweasdzxc')
 
 class Item():
     def __init__(self):
@@ -58,20 +61,20 @@ def save():
     insertRequest.addValue(safeDB.fields['gen_after'], gen_after_therapy)
     insertRequest.addValue(safeDB.fields['is_effective'], is_effective)
     
-    safeDB.insert(insertRequest)
+    print str(safeDB.build_insert_args(insertRequest))
     ciphered_name = str_to_number(det_encrypt_string(name))
     ciphered_age = ope_encrypt_int(age)
     ciphered_therapy_duration = ope_encrypt_int(therapy_duration)
     ciphered_gen_before = he_encrypt(gen_before_therapy)
     ciphered_gen_after = he_encrypt(gen_after_therapy)
     ciphered_is_effective = str_to_number(det_encrypt_string(is_effective))
-    insert(ciphered_name, ciphered_age, ciphered_therapy_duration, ciphered_gen_before, ciphered_gen_after, ciphered_is_effective)
+    #insert(ciphered_name, ciphered_age, ciphered_therapy_duration, ciphered_gen_before, ciphered_gen_after, ciphered_is_effective)
     return redirect(url_for('hello_world'))
 
 @app.route('/q', methods=['POST'])    
 def q():
     db_request = Request()
-    safe_request = SafeRequest()
+    safe_request = SelectRequest()
     name = request.form.get("name")
     age_min = request.form.get("age_min")
     age_max = request.form.get("age_max")

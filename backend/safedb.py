@@ -23,7 +23,7 @@ class Condition:
         self.condition = condition
         self.value = value
         
-class SafeRequest:
+class SelectRequest:
     def __init__(self):
         self.where = {}
         self.avg_request = {}
@@ -35,50 +35,88 @@ class SafeRequest:
     def addAvgCondition(self, fieldname, he_pub):
         self.avg_request[fieldname] = he_pub
         
+    def addSearchField(self, field):
+        self.search_fields.append(field)
+        
        
 class InsertRequest:
-
     def __init__(self):
-        # dict Field -> String/Int
         self.values = {}
         
     def addValue(self, field, value):
         self.values[field] = value
         
-class SafeDB:
-
+class PostgreRepository:
+    def __init__(self, dbname, user, host, password):
+        self.dbname = dbname
+        self.user = user
+        self.host = host
+        self.password = password
+        
+    def select(self, request):
+        conn = psycopg2.connect(create_conn_args())
+        cursor = conn.cursor()
+        cursor.execute(request)
+        rows = cursor.fetchall()
+        cursor.close()
+        conn.close()
+        return rows
+        
+    def insert(self, insert_args):
+        conn = psycopg2.connect(create_conn_args())
+        cursor = conn.cursor()
+        cursor.execute(insert_args[0], insert_args[1])
+        conn.commit()
+        cursor.close()
+        conn.close()
+        
+    def create_conn_args(self):
+        conn_args = "dbname='" + self.dbname
+        conn_args += "' user='" + self.user
+        conn_args += "' host='" + self.host
+        conn_args += "' password='" + self.password + "'"
+        return conn_args
+        
+class RequestBuilder:
     def __init__(self):
         self.fields = {}
         self.fields_array = []
         
-    def addField(self, name, operation):
+    def set_table_name(self, name):
+        self.table_name = name
+        
+    def add_field(self, name, operation):
         field = Field(name, operation)
         self.fields[name] = field
         self.fields_array.append(field)
         return field
         
-    def select(self, selectRequest):
-        request = self.buildSelect(selectRequest)
-        encryptedRequest = self.buildSelectEncrypt(selectRequest)
-        print "executing " + request
-        print "encrypted " + encryptedRequest
-        conn = psycopg2.connect("dbname='test_1' user='ivan' host='localhost' password='qweasdzxc'")
-        cursor = conn.cursor()
-        cursor.execute(encryptedRequest)
-        rows = cursor.fetchall()
-        cursor.close()
-        conn.close()
-        dRows = self.decryptRows(rows, selectRequest)
-        print "drows = " + str(dRows)
-        return dRows
+    def build_insert_args(self, insert_request):
+        column_names = ""
+        args = []
+        for field in insert_request.values.keys():
+            column_names += field.name + ", "
+            encryptedValue = None
+            if field.operation == "=":
+                encryptedValue = str_to_number(det_encrypt_string(insert_request.values[field]))
+            elif field.operation == ">":
+                encryptedValue = ope_encrypt_int(insert_request.values[field])
+            elif field.operation == "+":
+                encryptedValue = he_encrypt(insert_request.values[field])
+            else:
+                encryptedValue = insert_request.values[field]
+            args.append(encryptedValue)
+        column_names = column_names[:-2]
+        db_request = "INSERT INTO " + self.table_name + " (" + column_names + ") VALUES (" + ('%s, ' * len(insert_request.values))[:-2] + ")"
+        return (db_request, args)
         
-    def decryptRows(self, rows, selectRequest):
+    def decrypt_rows(self, rows, select_request):
         if (len(rows) == 0):    
             return rows
-        operations = self.formOperations(selectRequest)
+        operations = self.form_operations(select_request)
         dRows = []
         if (len(operations) != len(rows[0])):
-            raise Exception("wrong length")
+            raise Exception("Wrong length")
         j = 0
         for row in rows:
             dRow = []
@@ -99,75 +137,38 @@ class SafeDB:
             j += 1
         return dRows
         
-    def formOperations(self, selectRequest):
+    def form_operations(self, select_request):
         selecting = []
-        if (len(selectRequest.avg_request) == 0):
-            if (len(selectRequest.search_fields) == 0):
+        if (len(select_request.avg_request) == 0):
+            if (len(select_request.search_fields) == 0):
                 for field in self.fields_array:
                     selecting.append(field.operation)
             else:
-                for field in selectRequest.search_fields:
+                for field in select_request.search_fields:
                     selecting.append(field.operation)
         else:
-            for item in selectRequest.avg_request:
+            for item in select_request.avg_request:
                 selecting.append("+")
             selecting.append("none")
-        print "formed operations = " + str(selecting)
         return selecting
-        
-    def insert(self, insertRequest):
-        print "inserting " + str(insertRequest.values)
-        #conn = psycopg2.connect("dbname='test_1' user='ivan' host='localhost' password='qweasdzxc'")
-        #cursor = conn.cursor()
-        #request = """INSERT INTO test_2 (name, age, therapy_duration, gen_before, gen_after, is_effective) VALUES (%s, %s, %s, %s, %s, %s)"""
-        #args = (name, age, therapy_duration, gen_before, gen_after, is_effective)
-        #cursor.execute(request, args)
-        #conn.commit()
-        #cursor.close()
-        #conn.close()
-        
-    def buildSelect(self, selectRequest):
+    
+    def build_select_request(self, select_request):
         request = "SELECT "
-        avg_items = selectRequest.avg_request.items()
-        where = selectRequest.where.items()
+        avg_items = select_request.avg_request.items()
+        where = select_request.where.items()
         if (len(avg_items) == 0):
-            if (len(selectRequest.search_fields) == 0):
+            if (len(select_request.search_fields) == 0):
                 request += "* "
             else:
                 for field in search_fields:
                     request += field.name + " "
-            request += "FROM test_2"
         else:
             for item in avg_items:
                 field = item[0]
                 he_pub = item[1]
                 request += " my_avg_2(" + str(he_pub) + ", " + field.name + ")"
-            request += ", count(*) FROM test_2"
-        if (len(where) != 0):
-            request += "WHERE 1=1"
-            for item in where:
-                field = item[0]
-                condition = item[1]
-                request += ' AND ' + field.name + ' ' + condition.condition + ' ' + condition.value
-        return request
-        
-    def buildSelectEncrypt(self, selectRequest):
-        request = "SELECT "
-        avg_items = selectRequest.avg_request.items()
-        where = selectRequest.where.items()
-        if (len(avg_items) == 0):
-            if (len(selectRequest.search_fields) == 0):
-                request += "* "
-            else:
-                for field in search_fields:
-                    request += field.name + " "
-            request += "FROM test_2 "
-        else:
-            for item in avg_items:
-                field = item[0]
-                he_pub = item[1]
-                request += " my_avg_2(" + str(he_pub) + ", " + field.name + ")"
-            request += ", count(*) FROM test_2 "
+            request += ", count(*) "
+        request += "FROM " + self.table_name
         if (len(where) != 0):
             request += "WHERE 1=1"
             for item in where:
