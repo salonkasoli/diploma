@@ -9,6 +9,9 @@ from crypt.ope import get_ope_cipher
 from crypt.pailier import get_he_cipher
 from base64 import b64encode, b64decode
 import binascii
+import random
+import string
+import time
 
 app = Flask(__name__)
 request_builder = RequestBuilder()
@@ -132,7 +135,6 @@ def q():
             avg_before = sum_before / count
         if (sum_after != None):
             avg_after = sum_after / count
-        ## TODO redirect here to another page
         item = Item()
         item.count = count
         item.avg_before = avg_before
@@ -151,6 +153,123 @@ def q():
         item.is_effective = det_decrypt_string(number_to_str(row[6]))
         items.append(item)
     return render_template('list.html', items=items)
+    
+@app.route('/fill', methods=['GET']) 
+def fill_table():
+    data = generate_data(100)
+    clear_data = data[0]
+    enc_data = data[1]
+    clear_insert = 0
+    ts = time.time()
+    for clear in clear_data:
+        insert(clear[0], clear[1], clear[2], clear[3], clear[4], clear[5], 'test_clear')
+    clear_insert = (time.time() - ts)
+    print 'clear inserted in  = ' + str(clear_insert)
+        
+    enc_insert = 0
+    ts = time.time()
+    for enc in enc_data:
+        insert(enc[0], enc[1], enc[2], enc[3], enc[4], enc[5], 'test_2')
+    enc_insert = (time.time() - ts)
+    print 'enc inserted in  = ' + str(enc_insert)
+    return redirect(url_for('hello_world'))
+    
+@app.route('/test', methods=['GET']) 
+def test():
+    #select_ope_test(100)
+    #select_ope_test(200)
+    #select_ope_test(400)
+    #select_ope_test(800)
+    #select_ope_test(1500)
+    select_he_test(50)
+    return redirect(url_for('hello_world'))
+ 
+def select_ope_test(size):
+    db_request = Request()
+    clear_time = 0
+    enc_time = 0
+    age = random_int(60)
+    for i in range(size):
+        age = random_int(60)
+        db_request.max_age = age
+        ts = time.time()
+        rows_1 = select(db_request, "test_clear")
+        clear_time += (time.time() - ts)
+        encrypted = ope_encrypt_int(int(age))
+        db_request.avg_gen_after = encrypted
+        ts = time.time()
+        rows_2 = select(db_request, "test_2")
+        enc_time += (time.time() - ts)
+        if len(rows_1) != len(rows_2):
+            print "WTF. TESTS WRONG len 1 = " + str(len(rows_1)) + " len 2 = " + str(len(rows_2))
+    print 'OPE select size = ' + str(size) + ' clear time = ' + str(clear_time) + " enc time = " + str(enc_time)
+    
+def select_he_test(size):
+    db_request = Request()
+    clear_time = 0
+    enc_time = 0
+    gen_before_therapy = random_int(1000)
+    cipher = get_he_cipher()
+    db_request.he_pub = cipher.pub.n
+    for i in range(size):
+        age = random_int(60)
+        db_request.max_age = age
+        ts = time.time()
+        rows_1 = select(db_request, "test_clear")
+        clear_time += (time.time() - ts)
+        encrypted = he_encrypt(gen_before_therapy)
+        db_request.max_age = encrypted
+        ts = time.time()
+        rows_2 = select(db_request, "test_2")
+        enc_time += (time.time() - ts)
+        if len(rows_1) != len(rows_2):
+            print "WTF. TESTS WRONG len 1 = " + str(len(rows_1)) + " len 2 = " + str(len(rows_2))
+    print 'HE select times = ' + str(size) + ' clear time = ' + str(clear_time) + " enc time = " + str(enc_time)
+
+def generate_data(size):
+    clear_data = []
+    enc_data = []
+    clear_time = 0
+    enc_time = 0
+    print 'generating data'
+    for i in range(500):
+        ts = time.time()
+        name = random_string(10)
+        age = random_int(60)
+        therapy_duration = random_int(300)
+        gen_before_therapy = random_int(1000)
+        gen_after_therapy = random_int(1000)
+        is_effective = random_string(10)
+        clear_time += (time.time() - ts)
+        clear_data.append((name, age, therapy_duration, gen_before_therapy, gen_after_therapy, is_effective))
+        #insertRequest = InsertRequest()
+        #insertRequest.addValue(request_builder.fields['name'], name)
+        #insertRequest.addValue(request_builder.fields['age'], age)
+        #insertRequest.addValue(request_builder.fields['therapy_duration'], therapy_duration)
+        #insertRequest.addValue(request_builder.fields['gen_before'], gen_before_therapy)
+        #insertRequest.addValue(request_builder.fields['gen_after'], gen_after_therapy)
+        #insertRequest.addValue(request_builder.fields['is_effective'], is_effective)
+        #print str(request_builder.build_insert_args(insertRequest))
+        
+        ts = time.time()
+        ciphered_name = str_to_number(det_encrypt_string(name))
+        ciphered_age = ope_encrypt_int(age)
+        ciphered_therapy_duration = ope_encrypt_int(therapy_duration)
+        ciphered_gen_before = he_encrypt(gen_before_therapy)
+        ciphered_gen_after = he_encrypt(gen_after_therapy)
+        ciphered_is_effective = str_to_number(det_encrypt_string(is_effective))
+        enc_time += (time.time() - ts)
+        enc_data.append((ciphered_name, ciphered_age, ciphered_therapy_duration, ciphered_gen_before, ciphered_gen_after, ciphered_is_effective))
+    print 'all generated clear_time = ' + str(clear_time) + " enc_time = " + str(enc_time)
+    return (clear_data, enc_data)
+    
+def random_string(strlen = 10):
+    letters = string.ascii_lowercase
+    return ''.join(random.choice(letters) for i in range(strlen))
+    
+def random_int(max_int = 100):
+    return random.randint(0,max_int)
+    
     
 def check_int(arg):
     if (arg == None):

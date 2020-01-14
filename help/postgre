@@ -25,4 +25,15 @@ CREATE TABLE test_2 (
     is_effective decimal
 );
 
+
+CREATE TABLE test_clear (
+    id  SERIAL PRIMARY KEY,
+    name text,
+    age decimal,
+    therapy_duration decimal,
+    gen_before decimal,
+    gen_after decimal,
+    is_effective text
+);
+
 INSERT INTO test_2 (name, age, therapy_duration, gen_before, gen_after, is_effective) VALUES (1, 1, 1, 1, 1, 1);
