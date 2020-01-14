@@ -26,16 +26,16 @@ class Condition:
 class SelectRequest:
     def __init__(self):
         self.where = {}
-        self.avg_request = {}
+        self.avg_requests = []
         self.search_fields = []
         
-    def addCondition(self, field, condition):
+    def add_condition(self, field, condition):
         self.where[field] = condition
     
-    def addAvgCondition(self, fieldname, he_pub):
-        self.avg_request[fieldname] = he_pub
+    def add_avg_request(self, field):
+        self.avg_requests.append(field)
         
-    def addSearchField(self, field):
+    def add_search_field(self, field):
         self.search_fields.append(field)
         
        
@@ -96,46 +96,59 @@ class RequestBuilder:
         args = []
         for field in insert_request.values.keys():
             column_names += field.name + ", "
-            encryptedValue = None
+            enc_val = None
             if field.operation == "=":
-                encryptedValue = str_to_number(det_encrypt_string(insert_request.values[field]))
+                enc_val = str_to_number(det_encrypt_string(insert_request.values[field]))
             elif field.operation == ">":
-                encryptedValue = ope_encrypt_int(insert_request.values[field])
+                enc_val = ope_encrypt_int(insert_request.values[field])
             elif field.operation == "+":
-                encryptedValue = he_encrypt(insert_request.values[field])
+                enc_val = he_encrypt_int(insert_request.values[field])
             else:
-                encryptedValue = insert_request.values[field]
-            args.append(encryptedValue)
+                enc_val = insert_request.values[field]
+            args.append(enc_val)
         column_names = column_names[:-2]
-        db_request = "INSERT INTO " + self.table_name + " (" + column_names + ") VALUES (" + ('%s, ' * len(insert_request.values))[:-2] + ")"
+        args_str = ('%s, ' * len(insert_request.values))[:-2]
+        db_request = "INSERT INTO " + self.table_name
+        db_request += " (" + column_names + ") VALUES (" 
+        db_request += args_str + ")"
         return (db_request, args)
         
     def decrypt_rows(self, rows, select_request):
         if (len(rows) == 0):    
             return rows
         operations = self.form_operations(select_request)
-        dRows = []
+        d_rows = []
         if (len(operations) != len(rows[0])):
             raise Exception("Wrong length")
+        if len(select_request.avg_requests) > 0:
+            j = 0
+            last_index = len(select_request.avg_requests) - 1
+            row = rows[0]
+            d_row = []
+            while j < last_index:
+                d_row.append(he_decrypt(row[j]) / row[last_index])
+                j += 1
+            d_rows.append(d_row)
+            return d_rows
         j = 0
         for row in rows:
-            dRow = []
-            dRows.append(dRow)
+            d_row = []
+            d_rows.append(d_row)
             i = 0
             while i < len(operations):
-                decryptedValue = None
+                dec_value = None
                 if operations[i] == "=":
-                    decryptedValue = det_decrypt_string(number_to_str(row[i]))
+                    dec_value = det_decrypt_string(number_to_str(row[i]))
                 elif operations[i] == ">":
-                    decryptedValue = ope_decrypt_int(int(row[i]))
+                    dec_value = ope_decrypt_int(int(row[i]))
                 elif operations[i] == "+":
-                    decryptedValue = he_decrypt(int(row[i]))
+                    dec_value = he_decrypt(int(row[i]))
                 else:
-                    decryptedValue = row[i]
-                dRow.append(decryptedValue)
+                    dec_value = row[i]
+                d_row.append(dec_value)
                 i += 1
             j += 1
-        return dRows
+        return d_rows
         
     def form_operations(self, select_request):
         selecting = []
@@ -154,18 +167,18 @@ class RequestBuilder:
     
     def build_select_request(self, select_request):
         request = "SELECT "
-        avg_items = select_request.avg_request.items()
+        avg_requests = select_request.avg_requests
         where = select_request.where.items()
-        if (len(avg_items) == 0):
+        if (len(avg_requests) == 0):
             if (len(select_request.search_fields) == 0):
                 request += "* "
             else:
                 for field in search_fields:
                     request += field.name + " "
         else:
-            for item in avg_items:
-                field = item[0]
-                he_pub = item[1]
+            he_cipher = get_he_cipher()
+            he_pub = he_cipher.pub.n
+            for field in avg_requests:
                 request += " my_avg_2(" + str(he_pub) + ", " + field.name + ")"
             request += ", count(*) "
         request += "FROM " + self.table_name
@@ -174,14 +187,14 @@ class RequestBuilder:
             for item in where:
                 field = item[0]
                 condition = item[1]
-                encryptedValue = None
+                enc_value = None
                 if (field.operation == "="):
-                    encryptedValue = str_to_number(det_encrypt_string(str(condition.value)))
+                    enc_value = str_to_number(det_encrypt_string(str(condition.value)))
                 elif (field.operation == ">"):
-                    encryptedValue = ope_encrypt_int(int(condition.value))
+                    enc_value = ope_encrypt_int(int(condition.value))
                 else:
                     raise Exception('invalid operation')
-                request += ' AND ' + field.name + ' ' + condition.condition + ' ' + str(encryptedValue)
+                request += ' AND ' + field.name + ' ' + condition.condition + ' ' + str(enc_value)
         return request
         
         
@@ -204,7 +217,7 @@ def ope_decrypt_int(value):
     cipher = get_ope_cipher()
     return cipher.decrypt(value)
     
-def he_encrypt(value):
+def he_encrypt_int(value):
     cipher = get_he_cipher()
     return cipher.encrypt(value)
 

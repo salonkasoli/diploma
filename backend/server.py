@@ -54,14 +54,14 @@ def save():
     else:
         is_effective = "no"
     insertRequest = InsertRequest()
-    insertRequest.addValue(safeDB.fields['name'], name)
-    insertRequest.addValue(safeDB.fields['age'], age)
-    insertRequest.addValue(safeDB.fields['therapy_duration'], therapy_duration)
-    insertRequest.addValue(safeDB.fields['gen_before'], gen_before_therapy)
-    insertRequest.addValue(safeDB.fields['gen_after'], gen_after_therapy)
-    insertRequest.addValue(safeDB.fields['is_effective'], is_effective)
+    insertRequest.addValue(request_builder.fields['name'], name)
+    insertRequest.addValue(request_builder.fields['age'], age)
+    insertRequest.addValue(request_builder.fields['therapy_duration'], therapy_duration)
+    insertRequest.addValue(request_builder.fields['gen_before'], gen_before_therapy)
+    insertRequest.addValue(request_builder.fields['gen_after'], gen_after_therapy)
+    insertRequest.addValue(request_builder.fields['is_effective'], is_effective)
     
-    print str(safeDB.build_insert_args(insertRequest))
+    print str(request_builder.build_insert_args(insertRequest))
     ciphered_name = str_to_number(det_encrypt_string(name))
     ciphered_age = ope_encrypt_int(age)
     ciphered_therapy_duration = ope_encrypt_int(therapy_duration)
@@ -83,34 +83,34 @@ def q():
     is_effective = request.form.get("is_effective")
     if (name != None and len(name) > 0):
         db_request.name = str_to_number(det_encrypt_string(name))
-        safe_request.addCondition(safeDB.fields['name'],Condition("=", name))
+        safe_request.add_condition(request_builder.fields['name'],Condition("=", name))
     if (age_min != None and len(age_min) > 0):
         db_request.min_age = ope_encrypt_int(int(age_min))
-        safe_request.addCondition(safeDB.fields['age'],Condition(">", age_min))
+        safe_request.add_condition(request_builder.fields['age'],Condition(">", age_min))
     if (age_max != None and len(age_max) > 0):
         db_request.max_age = ope_encrypt_int(int(age_max))
-        safe_request.addCondition(safeDB.fields['age'],Condition("<", age_max))
+        safe_request.add_condition(request_builder.fields['age'],Condition("<", age_max))
     if (therapy_duration_min != None and len(therapy_duration_min) > 0):
         db_request.min_therapy_duration = ope_encrypt_int(int(therapy_duration_min))
-        safe_request.addCondition(safeDB.fields["therapy_duration"] ,Condition(">", therapy_duration_min))
+        safe_request.add_condition(request_builder.fields["therapy_duration"] ,Condition(">", therapy_duration_min))
     if (therapy_duration_max != None and len(therapy_duration_max) > 0):
         db_request.max_therapy_duration = ope_encrypt_int(int(therapy_duration_max))
-        safe_request.addCondition(safeDb.fields["therapy_duration"] ,Condition("<", therapy_duration_max))
+        safe_request.add_condition(request_builder.fields["therapy_duration"] ,Condition("<", therapy_duration_max))
     if (is_effective != None and len(is_effective) > 0):
         if (is_effective == 'yes' or is_effective == 'no'):
             db_request.is_effective = str_to_number(det_encrypt_string(is_effective))
-            safe_request.addCondition(safeDB.fields["is_effective"],Condition("=", is_effective))
+            safe_request.add_condition(request_builder.fields["is_effective"],Condition("=", is_effective))
     db_request.avg_gen_before = request.form.get("avg_before")
     db_request.avg_gen_after = request.form.get("avg_after")
     if (db_request.avg_gen_before != None or db_request.avg_gen_after != None):
         cipher = get_he_cipher()
         db_request.he_pub = cipher.pub.n
         if (db_request.avg_gen_before != None):
-            safe_request.addAvgCondition(safeDB.fields["gen_before"], cipher.pub.n)
+            safe_request.add_avg_request(request_builder.fields["gen_before"])
         if (db_request.avg_gen_after != None):
-            safe_request.addAvgCondition(safeDB.fields["gen_after"], cipher.pub.n)
+            safe_request.add_avg_request(request_builder.fields["gen_after"])
     
-    safeDB.select(safe_request)
+    request_builder.build_select_request(safe_request)
     rows = select(db_request)
     if (db_request.avg_gen_before != None or db_request.avg_gen_after != None):
         sum_before = None
