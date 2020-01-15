@@ -26,6 +26,10 @@ request_builder.add_field("is_effective", "=")
 
 postgreRepository = PostgreRepository('test_1','ivan','localhost','qweasdzxc')
 
+he_cipher = get_he_cipher()
+ope_cipher = get_ope_cipher()
+det_cipher = get_cipher()
+
 class Item():
     def __init__(self):
         pass
@@ -181,7 +185,15 @@ def test():
     #select_ope_test(400)
     #select_ope_test(800)
     #select_ope_test(1500)
+    
     select_he_test(50)
+    select_he_test(100)
+    select_he_test(200)
+    select_he_test(400)
+    
+    #select_det_test(100)
+    #select_det_test(200)
+    #select_det_test(400)
     return redirect(url_for('hello_world'))
  
 def select_ope_test(size):
@@ -196,7 +208,7 @@ def select_ope_test(size):
         rows_1 = select(db_request, "test_clear")
         clear_time += (time.time() - ts)
         encrypted = ope_encrypt_int(int(age))
-        db_request.avg_gen_after = encrypted
+        db_request.max_age = encrypted
         ts = time.time()
         rows_2 = select(db_request, "test_2")
         enc_time += (time.time() - ts)
@@ -204,21 +216,40 @@ def select_ope_test(size):
             print "WTF. TESTS WRONG len 1 = " + str(len(rows_1)) + " len 2 = " + str(len(rows_2))
     print 'OPE select size = ' + str(size) + ' clear time = ' + str(clear_time) + " enc time = " + str(enc_time)
     
+def select_det_test(size):
+    db_request = Request()
+    clear_time = 0
+    enc_time = 0
+    for i in range(size):
+        name = random_string(10)
+        db_request.name = name
+        ts = time.time()
+        rows_1 = select(db_request, "test_clear")
+        clear_time += (time.time() - ts)
+        ts = time.time()
+        encrypted = str_to_number(det_encrypt_string(name))
+        db_request.name = encrypted
+        rows_2 = select(db_request, "test_2")
+        enc_time += (time.time() - ts)
+        if len(rows_1) != len(rows_2):
+            print "WTF. TESTS WRONG len 1 = " + str(len(rows_1)) + " len 2 = " + str(len(rows_2))
+        if len(rows_1) > 0:
+            print 'hooray!'
+    print 'DET select size = ' + str(size) + ' clear time = ' + str(clear_time) + " enc time = " + str(enc_time)
+    
 def select_he_test(size):
     db_request = Request()
     clear_time = 0
     enc_time = 0
-    gen_before_therapy = random_int(1000)
-    cipher = get_he_cipher()
-    db_request.he_pub = cipher.pub.n
+    db_request.he_pub = he_cipher.pub.n
     for i in range(size):
-        age = random_int(60)
-        db_request.max_age = age
+        gen_before_therapy = random_int(1000)
+        db_request.avg_gen_before = gen_before_therapy
         ts = time.time()
         rows_1 = select(db_request, "test_clear")
         clear_time += (time.time() - ts)
         encrypted = he_encrypt(gen_before_therapy)
-        db_request.max_age = encrypted
+        db_request.avg_gen_before = encrypted
         ts = time.time()
         rows_2 = select(db_request, "test_2")
         enc_time += (time.time() - ts)
@@ -279,31 +310,25 @@ def check_int(arg):
     return int(arg)
         
 def det_encrypt_string(s):
-    cipher = get_cipher()
-    ct = cipher.encrypt(bytes(s))
+    ct = det_cipher.encrypt(bytes(s))
     return b64encode(ct)
     
 def det_decrypt_string(s):
     ct = b64decode(s)
-    cipher = get_cipher()
-    pt = cipher.decrypt(ct)
+    pt = det_cipher.decrypt(ct)
     return pt
     
 def ope_encrypt_int(value):
-    cipher = get_ope_cipher()
-    return cipher.encrypt(value)
+    return ope_cipher.encrypt(value)
     
 def ope_decrypt_int(value):
-    cipher = get_ope_cipher()
-    return cipher.decrypt(value)
+    return ope_cipher.decrypt(value)
     
 def he_encrypt(value):
-    cipher = get_he_cipher()
-    return cipher.encrypt(value)
+    return he_cipher.encrypt(value)
 
 def he_decrypt(value):
-    cipher = get_he_cipher()
-    return cipher.decrypt(value)
+    return he_cipher.decrypt(value)
 
 if __name__ == '__main__':
     app.run()

@@ -10,18 +10,7 @@ insert
 100 vals. CLEAR = 0.940387964249 ENC = 0.865864992142
 500 vals. CLEAR = 4.37813019753 ENC = 4.38184309006
 
-
-OPE
-
-600
-
-OPE select size = 100 clear time = 1.38443517685 enc time = 2.00084400177
-OPE select size = 200 clear time = 2.41427397728 enc time = 3.59857368469
-OPE select size = 400 clear time = 4.79785966873 enc time = 7.04117703438
-OPE select size = 800 clear time = 9.75370264053 enc time = 14.5421934128
-OPE select size = 1500 clear time = 18.3469507694 enc time = 27.5631844997
-
-1500
+1000 vals in table
 
 OPE select size = 100 clear time = 1.71114873886 enc time = 2.89934563637
 OPE select size = 200 clear time = 3.18535780907 enc time = 5.29227399826
@@ -29,3 +18,7 @@ OPE select size = 400 clear time = 6.54130363464 enc time = 10.918330431
 OPE select size = 800 clear time = 13.126488924 enc time = 21.897990942
 OPE select size = 1500 clear time = 24.7838294506 enc time = 40.8021309376
 
+
+DET select size = 100 clear time = 0.724625825882 enc time = 0.739525079727
+DET select size = 200 clear time = 1.32380223274 enc time = 1.38479161263
+DET select size = 400 clear time = 2.66945934296 enc time = 2.73309469223

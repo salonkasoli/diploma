@@ -33,9 +33,19 @@ class Request:
         if (self.max_age != None):
             request += ' AND age < ' + str(self.max_age)
         if (self.is_effective != None):
-            request += ' AND is_effective = ' + str(self.is_effective)
+            request += ' AND is_effective = '
+            if base == 'test_clear':
+                request += "'"
+            request += str(self.is_effective)
+            if base == 'test_clear':
+                request += "'"
         if (self.name != None):
-            request += ' AND name = ' + str(self.name)
+            request += ' AND name = ' 
+            if base == 'test_clear':
+                request += "'"
+            request += str(self.name)
+            if base == 'test_clear':
+                request += "'"
         if (self.min_therapy_duration != None):
             request += ' AND therapy_duration > ' + str(self.min_therapy_duration)
         if (self.max_therapy_duration != None):
