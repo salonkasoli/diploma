@@ -1,24 +1,217 @@
 encryption
 
 100 - 10.3897354603
-500 - 55.2915637493
-
-Linear
+500 - 51.4532482624
 
 insert
 
-100 vals. CLEAR = 0.940387964249 ENC = 0.865864992142
-500 vals. CLEAR = 4.37813019753 ENC = 4.38184309006
+insert test size 100
+generating data
+all generated clear_time = 0.00401902198792 enc_time = 12.0379314423
+clear inserted in  = 0.879937887192
+enc inserted in  = 0.86025595665
+insert test size 200
+generating data
+all generated clear_time = 0.00775194168091 enc_time = 20.2793471813
+clear inserted in  = 1.77241611481
+enc inserted in  = 1.76788187027
+insert test size 300
+generating data
+all generated clear_time = 0.0119962692261 enc_time = 32.5380063057
+clear inserted in  = 2.68808794022
+enc inserted in  = 2.64879703522
+insert test size 400
+generating data
+all generated clear_time = 0.0155363082886 enc_time = 41.606944561
+clear inserted in  = 3.54174995422
+enc inserted in  = 3.58063602448
+
+100 0.879937887192 0.86025595665 12.0379314423
+200 1.77241611481 1.76788187027 20.2793471813
+300 2.68808794022 2.64879703522 32.5380063057
+400 3.54174995422 3.58063602448 41.606944561
+
 
 1000 vals in table
 
-OPE select size = 100 clear time = 1.71114873886 enc time = 2.89934563637
-OPE select size = 200 clear time = 3.18535780907 enc time = 5.29227399826
-OPE select size = 400 clear time = 6.54130363464 enc time = 10.918330431
-OPE select size = 800 clear time = 13.126488924 enc time = 21.897990942
-OPE select size = 1500 clear time = 24.7838294506 enc time = 40.8021309376
+OPE select size = 100 clear time = 2.86124944687 enc time = 5.14507889748
+OPE select size = 200 clear time = 5.59613585472 enc time = 10.4753415585
+OPE select size = 300 clear time = 8.51655101776 enc time = 15.5647265911
+OPE select size = 400 clear time = 11.4396486282 enc time = 21.0805590153
+OPE select size = 500 clear time = 14.2446293831 enc time = 25.9418189526
+OPE select size = 600 clear time = 17.0498595238 enc time = 31.2655074596
+OPE select size = 700 clear time = 20.3295218945 enc time = 36.8685057163
+
+100 2.86124944687 5.14507889748
+200 5.59613585472 10.4753415585
+300 8.51655101776 15.5647265911
+400 11.4396486282 21.0805590153
+500 14.2446293831 25.9418189526
+600 17.0498595238 31.2655074596
+700 20.3295218945 36.8685057163
+800 23.6979744434 
+
+Decrypt time = 4.0381860733 rows len = 474
+OPE select size = 1 clear time = 0.0175728797913 enc time = 0.0241148471832
+Total decrypt time = 4.0381860733
+Decrypt time = 3.0880510807 rows len = 367
+Decrypt time = 7.1841340065 rows len = 854
+Decrypt time = 4.17328906059 rows len = 506
+Decrypt time = 3.53360795975 rows len = 411
+Decrypt time = 8.02037096024 rows len = 945
+OPE select size = 5 clear time = 0.108999729156 enc time = 0.147271156311
+Total decrypt time = 25.9994530678
+Decrypt time = 6.45552682877 rows len = 777
+Decrypt time = 4.62616181374 rows len = 553
+Decrypt time = 6.84797596931 rows len = 811
+Decrypt time = 7.38627290726 rows len = 874
+Decrypt time = 3.6846010685 rows len = 429
+Decrypt time = 7.44566702843 rows len = 874
+Decrypt time = 0.469244003296 rows len = 57
+Decrypt time = 7.39736199379 rows len = 874
+Decrypt time = 1.03943991661 rows len = 124
+Decrypt time = 5.1319231987 rows len = 583
+OPE select size = 10 clear time = 0.168162822723 enc time = 0.310114145279
+Total decrypt time = 50.4841747284
+Decrypt time = 6.8395280838 rows len = 801
+Decrypt time = 1.02417683601 rows len = 124
+Decrypt time = 0.186099052429 rows len = 22
+Decrypt time = 3.96903896332 rows len = 463
+Decrypt time = 5.0154838562 rows len = 583
+Decrypt time = 5.09920310974 rows len = 602
+Decrypt time = 0.661193132401 rows len = 83
+Decrypt time = 2.00476503372 rows len = 238
+Decrypt time = 7.28322696686 rows len = 854
+Decrypt time = 6.18417692184 rows len = 728
+Decrypt time = 3.53833007812 rows len = 411
+Decrypt time = 3.81694221497 rows len = 446
+Decrypt time = 6.87635183334 rows len = 811
+Decrypt time = 1.10776782036 rows len = 138
+Decrypt time = 5.16990089417 rows len = 615
+Decrypt time = 0.929767131805 rows len = 110
+Decrypt time = 3.88216495514 rows len = 446
+Decrypt time = 2.14576721191e-06 rows len = 0
+Decrypt time = 2.91742801666 rows len = 333
+Decrypt time = 6.31816911697 rows len = 746
+OPE select size = 20 clear time = 0.305866956711 enc time = 0.450553417206
+Total decrypt time = 72.8237161636
+Decrypt time = 3.8483479023 rows len = 446
+Decrypt time = 7.4380941391 rows len = 890
+Decrypt time = 2.69414401054 rows len = 312
+Decrypt time = 1.22910904884 rows len = 152
+Decrypt time = 3.98218894005 rows len = 474
+Decrypt time = 3.27776098251 rows len = 386
+Decrypt time = 4.87466716766 rows len = 583
+Decrypt time = 0.699051856995 rows len = 83
+Decrypt time = 2.37210893631 rows len = 279
+Decrypt time = 5.40688490868 rows len = 662
+Decrypt time = 0.185645103455 rows len = 22
+Decrypt time = 8.77306103706 rows len = 928
+Decrypt time = 1.88189387321 rows len = 227
+Decrypt time = 6.78907990456 rows len = 811
+Decrypt time = 1.25513911247 rows len = 152
+Decrypt time = 6.46103310585 rows len = 746
+Decrypt time = 4.11779379845 rows len = 491
+Decrypt time = 2.38544297218 rows len = 279
+Decrypt time = 9.53674316406e-07 rows len = 0
+Decrypt time = 5.82270884514 rows len = 695
+Decrypt time = 1.76934480667 rows len = 212
+Decrypt time = 3.77325391769 rows len = 446
+Decrypt time = 7.46282100677 rows len = 900
+Decrypt time = 2.58159589767 rows len = 300
+Decrypt time = 6.20565485954 rows len = 728
+Decrypt time = 0.895659923553 rows len = 110
+Decrypt time = 4.88773488998 rows len = 583
+Decrypt time = 5.09484815598 rows len = 615
+Decrypt time = 7.36100697517 rows len = 874
+Decrypt time = 5.20222210884 rows len = 615
+OPE select size = 30 clear time = 0.441785573959 enc time = 0.749077558517
+Total decrypt time = 118.728299141
+Decrypt time = 0.872840881348 rows len = 110
+Decrypt time = 7.9616420269 rows len = 945
+Decrypt time = 5.13547420502 rows len = 631
+Decrypt time = 7.67708206177 rows len = 900
+Decrypt time = 0.194074869156 rows len = 22
+Decrypt time = 2.19941186905 rows len = 257
+Decrypt time = 2.20301103592 rows len = 257
+Decrypt time = 1.24357795715 rows len = 152
+Decrypt time = 5.73970794678 rows len = 678
+Decrypt time = 2.58207607269 rows len = 300
+Decrypt time = 3.6960299015 rows len = 429
+Decrypt time = 0.333997011185 rows len = 41
+Decrypt time = 3.34669494629 rows len = 386
+Decrypt time = 0.89866399765 rows len = 110
+Decrypt time = 5.21089220047 rows len = 615
+Decrypt time = 6.47388601303 rows len = 746
+Decrypt time = 3.58892202377 rows len = 411
+Decrypt time = 2.39713692665 rows len = 279
+Decrypt time = 2.04792404175 rows len = 238
+Decrypt time = 0.473315000534 rows len = 57
+Decrypt time = 6.3843998909 rows len = 746
+Decrypt time = 5.77952408791 rows len = 678
+Decrypt time = 6.25657510757 rows len = 746
+Decrypt time = 2.64543318748 rows len = 312
+Decrypt time = 6.19348502159 rows len = 746
+Decrypt time = 7.02970600128 rows len = 828
+Decrypt time = 7.16515398026 rows len = 842
+Decrypt time = 4.97698307037 rows len = 570
+Decrypt time = 4.95443296432 rows len = 583
+Decrypt time = 2.14576721191e-06 rows len = 0
+Decrypt time = 3.71507000923 rows len = 429
+Decrypt time = 1.96131896973 rows len = 227
+Decrypt time = 5.69258403778 rows len = 648
+Decrypt time = 5.04400396347 rows len = 570
+Decrypt time = 2.58316493034 rows len = 300
+Decrypt time = 0.918099164963 rows len = 110
+Decrypt time = 7.49744510651 rows len = 874
+Decrypt time = 8.22729206085 rows len = 900
+Decrypt time = 4.22140693665 rows len = 491
+Decrypt time = 6.30452394485 rows len = 695
+OPE select size = 40 clear time = 0.600224018097 enc time = 1.01407909393
+Total decrypt time = 161.82696557
 
 
-DET select size = 100 clear time = 0.724625825882 enc time = 0.739525079727
-DET select size = 200 clear time = 1.32380223274 enc time = 1.38479161263
-DET select size = 400 clear time = 2.66945934296 enc time = 2.73309469223
+
+HE select times = 100 clear time = 0.723438978195 enc time = 3.14288640022
+HE select times = 200 clear time = 1.45798182487 enc time = 6.13882184029
+HE select times = 300 clear time = 2.16456651688 enc time = 9.17467617989
+HE select times = 400 clear time = 3.01410937309 enc time = 12.4971456528
+HE select times = 500 clear time = 3.72494530678 enc time = 15.6356570721
+HE select times = 600 clear time = 4.30989527702 enc time = 18.5323996544
+HE select times = 700 clear time = 5.0130546093 enc time = 21.411757946
+HE select times = 800 clear time = 5.71582818031 enc time = 24.6181747913
+
+100 0.723438978195 3.14288640022
+200 1.45798182487 6.13882184029
+300 2.78477668762 9.17467617989
+400 3.01410937309 12.4971456528
+500 3.72494530678 15.6356570721
+600 4.30989527702 18.5323996544
+700 5.0130546093 21.411757946
+800 5.71582818031 24.6181747913
+
+DET select size = 100 clear time = 0.773924350739 enc time = 0.825492620468
+Decrypt time = 1.23759031296
+DET select size = 200 clear time = 1.44642233849 enc time = 1.5610563755
+Decrypt time = 1.92386722565
+DET select size = 400 clear time = 2.88826537132 enc time = 3.07478404045
+Decrypt time = 3.81367135048
+DET select size = 800 clear time = 5.74092292786 enc time = 6.15877270699
+Decrypt time = 7.60760378838
+DET select size = 1000 clear time = 7.25186395645 enc time = 7.73466944695
+Decrypt time = 9.70205307007
+DET select size = 1200 clear time = 8.716827631 enc time = 9.20095491409
+Decrypt time = 11.5302865505
+
+100 0.773924350739 0.825492620468 
+200 1.54642233849 1.4810563755
+400 2.98826537132 3.07478404045
+800 6.14092292786 5.95877270699
+1000 7.25186395645 7.33466944695
+1200 8.916827631 9.00095491409
+
+
+HE select times = 50 clear time = 0.386506557465 enc time = 0.903605222702
+HE select times = 100 clear time = 0.674189805984 enc time = 1.65444016457
+HE select times = 200 clear time = 1.35821247101 enc time = 3.30755138397
+HE select times = 400 clear time = 2.74027872086 enc time = 6.66972064972
