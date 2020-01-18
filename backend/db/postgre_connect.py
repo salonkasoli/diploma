@@ -24,7 +24,8 @@ class Request:
                     if (self.avg_gen_before != None):
                         request += ','
                     request += """ my_avg_2(""" + str(self.he_pub) + """, gen_after)"""
-                request += """, count(gen_after) FROM test_2 WHERE 1=1"""
+                #request += """, count(gen_after) FROM test_2 WHERE 1=1"""
+                request += """ FROM test_2 WHERE 1=1"""
             else:
                 request += ' avg(gen_before) FROM test_clear WHERE 1=1'
         

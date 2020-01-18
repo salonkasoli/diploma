@@ -1,0 +1,59 @@
+500 entries
+
+DET select size = 1000 clear time = 6.7905087471 enc time = 7.20034360886
+HE select times = 1000 clear time = 6.76797556877 enc time = 11.9059247971
+OPE select size = 1000 clear time = 11.2258570194 enc time = 16.448611021
+
+1000 entries
+
+OPE select size = 1000 clear time = 16.1797907352 enc time = 25.2748236656
+HE select times = 1000 clear time = 6.98489117622 enc time = 16.6993939877
+DET select size = 1000 clear time = 6.82534527779 enc time = 7.28278183937
+
+1500
+
+OPE select size = 1000 clear time = 20.1174995899 enc time = 34.3865897655
+HE select times = 1000 clear time = 7.09692430496 enc time = 21.3379712105
+DET select size = 1000 clear time = 6.87120914459 enc time = 7.31731343269
+
+2000
+
+OPE select size = 1000 clear time = 24.0645978451 enc time = 43.8953447342
+HE select times = 1000 clear time = 7.0674598217 enc time = 25.9510467052
+DET select size = 1000 clear time = 6.93024492264 enc time = 7.41039204597
+
+2500
+
+OPE select size = 1000 clear time = 28.442289114 enc time = 52.4701766968
+HE select times = 1000 clear time = 7.25023269653 enc time = 30.810333252
+DET select size = 1000 clear time = 7.14014983177 enc time = 7.62267780304
+
+=======================================================================================================
+
+500
+
+OPE select size = 1000 clear time = 11.4355244637 enc time = 16.828561306 cyhper_time = 5.16773509979
+HE select times = 1000 clear time = 6.95813179016 enc time = 11.6883201599 cyhper_time = 0.187393188477
+DET select size = 1000 clear time = 6.76672315598 enc time = 6.90015792847 cyhper_time = 0.251708030701
+
+OPE select size = 1000 clear time = 16.4874207973 enc time = 26.2615087032 cyhper_time = 5.19173383713
+HE select times = 1000 clear time = 7.08135390282 enc time = 16.144412756 cyhper_time = 0.184796571732
+DET select size = 1000 clear time = 6.86447405815 enc time = 7.08524990082 cyhper_time = 0.256437540054
+Decrypt time = 0.00197243690491
+
+
+10000
+
+DET select size = 100 clear time = 0.864028215408 enc time = 0.927114248276 cyhper_time = 0.0292975902557
+Decrypt time = 0.000202417373657
+OPE select size = 100 clear time = 9.47083878517 enc time = 19.2342808247 cyhper_time = 0.653516292572
+HE select times = 100 clear time = 0.896379470825 enc time = 9.51642799377 cyhper_time = 4.67300415039e-05
+
+
+WITH OPE AND HE
+OPE 30
+select size = 100 clear time = 0.971085309982 enc time = 5.35238075256 cyhper_time = 0.744416236877
+OPE 60
+select size = 100 clear time = 1.08982205391 enc time = 10.1669461727 cyhper_time = 0.760468482971
+OPE 1
+select size = 100 clear time = 0.900726795197 enc time = 1.13043928146 cyhper_time = 0.69334936142
