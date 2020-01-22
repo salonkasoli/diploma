@@ -1,5 +1,6 @@
 import psycopg2
 
+# Legacy class. Use it, because safedb module cant work with unencrypted db.
 class Request:
     min_age = None
     max_age = None
@@ -24,8 +25,8 @@ class Request:
                     if (self.avg_gen_before != None):
                         request += ','
                     request += """ my_avg_2(""" + str(self.he_pub) + """, gen_after)"""
-                #request += """, count(gen_after) FROM test_2 WHERE 1=1"""
-                request += """ FROM test_2 WHERE 1=1"""
+                request += """, count(gen_after) FROM test_2 WHERE 1=1"""
+                #request += """ FROM test_2 WHERE 1=1"""
             else:
                 request += ' avg(gen_before) FROM test_clear WHERE 1=1'
         
@@ -67,7 +68,7 @@ def insert(name, age, therapy_duration, gen_before, gen_after, is_effective, bas
 def select(request, base = "test_2"):
     conn = psycopg2.connect("dbname='test_1' user='ivan' host='localhost' password='qweasdzxc'")
     cursor = conn.cursor()
-    #print 'actual = ' + request.build()
+    print 'actual = ' + request.build()
     req = request.build(base)
     cursor.execute(req)
     rows = cursor.fetchall()

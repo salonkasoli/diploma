@@ -24,7 +24,7 @@ request_builder.add_field("gen_before", "+")
 request_builder.add_field("gen_after", "+")
 request_builder.add_field("is_effective", "=")
 
-postgreRepository = PostgreRepository('test_1','ivan','localhost','qweasdzxc')
+postgre_repository = PostgreRepository('test_1','ivan','localhost','qweasdzxc')
 
 he_cipher = get_he_cipher()
 ope_cipher = get_ope_cipher()
@@ -67,14 +67,15 @@ def save():
     insertRequest.addValue(request_builder.fields['gen_before'], gen_before_therapy)
     insertRequest.addValue(request_builder.fields['gen_after'], gen_after_therapy)
     insertRequest.addValue(request_builder.fields['is_effective'], is_effective)
-    
-    print str(request_builder.build_insert_args(insertRequest))
-    ciphered_name = str_to_number(det_encrypt_string(name))
-    ciphered_age = ope_encrypt_int(age)
-    ciphered_therapy_duration = ope_encrypt_int(therapy_duration)
-    ciphered_gen_before = he_encrypt(gen_before_therapy)
-    ciphered_gen_after = he_encrypt(gen_after_therapy)
-    ciphered_is_effective = str_to_number(det_encrypt_string(is_effective))
+    args = request_builder.build_insert_args(insertRequest)
+    postgre_repository.insert(args)
+    # Legacy insert
+    #ciphered_name = str_to_number(det_encrypt_string(name))
+    #ciphered_age = ope_encrypt_int(age)
+    #ciphered_therapy_duration = ope_encrypt_int(therapy_duration)
+    #ciphered_gen_before = he_encrypt(gen_before_therapy)
+    #ciphered_gen_after = he_encrypt(gen_after_therapy)
+    #ciphered_is_effective = str_to_number(det_encrypt_string(is_effective))
     #insert(ciphered_name, ciphered_age, ciphered_therapy_duration, ciphered_gen_before, ciphered_gen_after, ciphered_is_effective)
     return redirect(url_for('hello_world'))
 
@@ -190,16 +191,18 @@ def test():
     print 'add 500 entiries'
     #insert_test(10000)
     print 'START TEST!!!!!!!!!!!!!!!!!!!'
-    #select_ope_test(100)
-    select_ope_test(200)
-    select_ope_test(300)
-    select_ope_test(400)
-    select_ope_test(500)
-    select_ope_test(600)
-    select_ope_test(700)
-    select_ope_test(800)
-    select_ope_test(900)
-    select_ope_test(1000)
+    select_ope_test(1)
+    select_det_test(1)
+    select_he_test(1)
+    #select_ope_test(200)
+    #select_ope_test(300)
+    #select_ope_test(400)
+    #select_ope_test(500)
+    #select_ope_test(600)
+    #select_ope_test(700)
+    #select_ope_test(800)
+    #select_ope_test(900)
+    #select_ope_test(1000)
     #select_ope_test(1100)
     #select_ope_test(1200)
     #select_ope_test(1300)
@@ -235,25 +238,30 @@ def select_ope_test(size):
     decrypt_time = 0
     cypher_time = 0
     for i in range(size):
-        age = 1
-        db_request.max_age = age
+        min_age = 25
+        max_age = 30
+        db_request.max_age = min_age
+        db_request.min_age = max_age
         ts = time.time()
         rows_1 = select(db_request, "test_clear")
         clear_time += (time.time() - ts)
         ts = time.time()
-        encrypted = ope_encrypt_int(int(age))
+        enc_min_age = ope_encrypt_int(int(min_age))
+        enc_max_age = ope_encrypt_int(int(max_age))
         cypher_time += (time.time() - ts)
-        db_request.max_age = encrypted
+        db_request.max_age = enc_max_age
+        db_request.min_age = enc_min_age
         ts = time.time()
         rows_2 = select(db_request, "test_2")
         enc_time += (time.time() - ts)
         if len(rows_1) != len(rows_2):
             print "WTF. TESTS WRONG len 1 = " + str(len(rows_1)) + " len 2 = " + str(len(rows_2))
         else:
-            pass
-            #decrypt_time += decrypt(rows_2)
+            #pass
+            decrypt_time += decrypt(rows_2)
     print 'OPE select size = ' + str(size) + ' clear time = ' + str(clear_time) + " enc time = " + str(enc_time) + " cyhper_time = " + str(cypher_time)
-    #print 'Total decrypt time = ' + str(decrypt_time)
+    print 'Total decrypt time = ' + str(decrypt_time) + " rows len = " + str(len(rows_2))
+    print 'TOTAL TIME = ' + str(decrypt_time + enc_time + cypher_time)
     
     
 def select_all_test(size):
@@ -315,7 +323,8 @@ def select_det_test(size):
         #    print 'hooray!'
         dec_time += decrypt(rows_2)
     print 'DET select size = ' + str(size) + ' clear time = ' + str(clear_time) + " enc time = " + str(enc_time) + " cyhper_time = " + str(cypher_time)
-    print 'Decrypt time = ' + str(dec_time)
+    print 'Decrypt time = ' + str(dec_time) + " len = " + str(len(rows_2))
+    print 'TOTAL TIME = ' + str(dec_time + enc_time + cypher_time)
     
 def select_he_test(size):
     db_request = Request()
@@ -335,13 +344,13 @@ def select_he_test(size):
         rows_2 = select(db_request, "test_2")
         enc_time += (time.time() - ts)
         ts = time.time()
-        #sum_before = he_decrypt(int(rows_2[0][0])) / rows_2[0][1]
-        sum_before = 1
+        sum_before = he_decrypt(int(rows_2[0][0])) / rows_2[0][1]
         cypher_time += (time.time() - ts)
         if sum_before != rows_1[0][0]:
-            pass
-            #print "WTF. TESTS WRONG he sum = " + str(sum_before) + " actual = " + str(rows_1[0][0])
+            #pass
+            print "WTF. TESTS WRONG he sum = " + str(sum_before) + " actual = " + str(rows_1[0][0])
     print 'HE select times = ' + str(size) + ' clear time = ' + str(clear_time) + " enc time = " + str(enc_time) + " cyhper_time = " + str(cypher_time)
+    print 'Total TIME = ' + str(enc_time + cypher_time)
     
 def decrypt(rows):
     dec_time = 0

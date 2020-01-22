@@ -54,7 +54,7 @@ class PostgreRepository:
         self.password = password
         
     def select(self, request):
-        conn = psycopg2.connect(create_conn_args())
+        conn = psycopg2.connect(self.create_conn_args())
         cursor = conn.cursor()
         cursor.execute(request)
         rows = cursor.fetchall()
@@ -63,7 +63,7 @@ class PostgreRepository:
         return rows
         
     def insert(self, insert_args):
-        conn = psycopg2.connect(create_conn_args())
+        conn = psycopg2.connect(self.create_conn_args())
         cursor = conn.cursor()
         cursor.execute(insert_args[0], insert_args[1])
         conn.commit()
