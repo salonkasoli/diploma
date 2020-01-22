@@ -1,5 +1,6 @@
 import binascii
 
+# Some small helper functions to convert str->int and back
 def str_to_number(s):
     number = int(binascii.hexlify(s.encode('utf-8')), 16)
     return number

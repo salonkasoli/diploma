@@ -4,6 +4,7 @@ import pickle
 PAILLIER_PUB_KEY = "paillier_pub.txt"
 PAILLIER_PRIVATE_KEY = "paillier_priv.txt"
 
+# Decorator for HE cipher. Easy to re-implement
 class HECipher:
     def __init__(self, priv, pub):
         self.priv = priv
@@ -48,6 +49,7 @@ def get_he_cipher():
     
     
 if __name__ == '__main__':
+    # kind of dummy test
     cipher = get_he_cipher()
     ct = cipher.encrypt(123)
     print str(ct)

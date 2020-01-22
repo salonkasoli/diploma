@@ -4,7 +4,7 @@ from deserialize import *
 
 OPE_KEY_FILE = "ope_key.txt"
 
-
+# Some helpers for OPE cipher
 def generate_key():
     random_key = OPE.generate_key()
     save(OPE_KEY_FILE, random_key)

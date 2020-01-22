@@ -1,3 +1,4 @@
+# Small module for deserialization
 def load(filename):
     try:
         f = open(filename, "r")

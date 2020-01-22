@@ -1,3 +1,4 @@
+# some dummy foo to save text to file
 def save(filename, text):
     f = open(filename, "w+")
     f.write(text)

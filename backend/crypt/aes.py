@@ -10,26 +10,30 @@ from deserialize import *
 
 AES_KEY_FILE = "aes_key.txt"
 
+# Decorator for AES-SIV cipher. Easy to implement another here, just save contract
 class DetCipher:
     def __init__(self, cipher):
         self.cipher = cipher
         
     def encrypt(self, data):
-        ct_bytes = self.cipher.encrypt(pad(data, AES.block_size))
+        c, t = self.cipher.encrypt_and_digest(data)
+        return b64encode(c) + ";" + b64encode(t)
         return ct_bytes
         
-    def decrypt(self, ct_bytes):
-        pt = unpad(self.cipher.decrypt(ct_bytes), AES.block_size)
+    def decrypt(self, string):
+        splited_str = string.split(";")
+        pt = self.cipher.decrypt_and_verify(b64decode(splited_str[0]), b64decode(splited_str[1]))
         return pt
         
 
 
 def generate_key_info():
-    key = get_random_bytes(16)
-    cipher = AES.new(key, AES.MODE_CBC)
-    encoded_iv = b64encode(cipher.iv).decode('utf-8')
+    key = get_random_bytes(16 * 2)
+    nonce = get_random_bytes(16)
+    cipher = AES.new(key, AES.MODE_SIV)
     encoded_key = b64encode(key).decode('utf-8')
-    key_info = str(json.dumps({'iv':encoded_iv, 'key':encoded_key}))
+    encoded_nonce = b64encode(nonce).decode('utf-8')
+    key_info = str(json.dumps({'key':encoded_key, 'nonce':encoded_nonce}))
     save(AES_KEY_FILE, key_info)
     return key_info
     
@@ -42,15 +46,15 @@ def get_key_info():
 def get_cipher():
     key_info = get_key_info()
     b64 = json.loads(key_info)
-    iv = b64decode(b64['iv'])
     key = b64decode(b64['key'])
-    cipher = AES.new(key, AES.MODE_CBC, iv)
+    nonce = b64decode(b64['nonce'])
+    cipher = AES.new(key, AES.MODE_SIV, nonce = nonce)
     return DetCipher(cipher)
     
     
 if __name__== "__main__":
     cipher = get_cipher()
-    data = b'123'
+    data = b'lolkekcheburekkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkk'
     ct = cipher.encrypt(data)
     print ct
     cipher = get_cipher()
